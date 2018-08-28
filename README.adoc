@@ -1,4 +1,4 @@
-image::https://travis-ci.org/github/jhinrichsen/opsi-mkpkg?branch=master[Build Status]
+image:https://travis-ci.org/jhinrichsen/opsi-mkpkg.svg?branch=master["Build Status", link="https://travis-ci.org/jhinrichsen/opsi-mkpkg"]
 
 = opsi-mkpkg
 
