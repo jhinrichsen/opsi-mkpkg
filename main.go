@@ -158,8 +158,12 @@ func mkpkg(controlfile []byte, opsidir, datadir, into, tmpdir string) error {
 		return fmt.Errorf("cannot create %s: %s\n", opsiTarFilename, err)
 	}
 	tw := tar.NewWriter(opsiTarFile)
-	writeControlfile(tw, controlfile)
-	write(tw, opsidir, true)
+	if err := writeControlfile(tw, controlfile); err != nil {
+		return fmt.Errorf("error writing control file to %s: %s\n", opsiTarFilename, err)
+	}
+	if err := write(tw, opsidir, true); err != nil {
+		return fmt.Errorf("error writing control file to %s: %s\n", opsiTarFilename, err)
+	}
 	if err := tw.Close(); err != nil {
 		return fmt.Errorf("error closing %s: %s\n", opsiTarFilename, err)
 	}
@@ -179,7 +183,9 @@ func mkpkg(controlfile []byte, opsidir, datadir, into, tmpdir string) error {
 		return fmt.Errorf("cannot create %s: %s\n", clientTarFilename, err)
 	}
 	ctw := tar.NewWriter(clientTarFile)
-	write(ctw, datadir, false)
+	if err := write(ctw, datadir, false); err != nil {
+		return fmt.Errorf("cannot write %s: %s\n", clientTarFilename, err)
+	}
 	if err := ctw.Close(); err != nil {
 		return fmt.Errorf("error closing %s: %s\n", clientTarFilename, err)
 	}
@@ -194,14 +200,21 @@ func mkpkg(controlfile []byte, opsidir, datadir, into, tmpdir string) error {
 
 	// create final OPSI package
 	m, err := parse(bytes.NewReader(controlfile))
+	if err != nil {
+		return fmt.Errorf("error parsing controlfile: %s\n", err)
+	}
 	opsiPath := filepath.Join(into, filename(m))
 	opsiFile, err := os.Create(opsiPath)
 	if err != nil {
 		return fmt.Errorf("error creating %s: %s\n", opsiPath, err)
 	}
 	otw := tar.NewWriter(opsiFile)
-	write(otw, opsiTarGzFilename, false)
-	write(otw, clientTarGzFilename, false)
+	if err := write(otw, opsiTarGzFilename, false); err != nil {
+		return fmt.Errorf("error writing %s to %s: %s", opsiTarGzFilename, opsiPath, err)
+	}
+	if err := write(otw, clientTarGzFilename, false); err != nil {
+		return fmt.Errorf("error writing %s to %s: %s", clientTarGzFilename, opsiPath, err)
+	}
 	if err := otw.Close(); err != nil {
 		return fmt.Errorf("error closing %s: %s\n", opsiPath, err)
 	}

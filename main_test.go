@@ -36,12 +36,14 @@ func TestSimplePackage(t *testing.T) {
 			log.Fatal(fmt.Errorf("cannot remove %s: %s\n", workbench, err))
 		}
 	}()
-	mkpkg(buf,
+	if err := mkpkg(buf,
 		"testdata/simple/OPSI",
 		"testdata/simple/CLIENT_DATA",
 		os.TempDir(),
 		workbench,
-	)
+	); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestParseControlfile(t *testing.T) {
