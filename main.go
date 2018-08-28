@@ -22,6 +22,7 @@ import (
 	"time"
 )
 
+// Metadata holds a key value map
 type Metadata map[string]string
 
 func main() {
@@ -82,27 +83,27 @@ func compress(intoFilename string, fromFilename string) (os.FileInfo, error) {
 	log.Printf("compressing %s from %s\n", intoFilename, fromFilename)
 	from, err := os.Open(fromFilename)
 	if err != nil {
-		return nil, fmt.Errorf("error opening %s: %s\n", fromFilename, err)
+		return nil, fmt.Errorf("error opening %s: %s", fromFilename, err)
 	}
 	defer from.Close()
 
 	into, err := os.Create(intoFilename)
 	if err != nil {
-		return nil, fmt.Errorf("error creating %s: %s\n", intoFilename, err)
+		return nil, fmt.Errorf("error creating %s: %s", intoFilename, err)
 	}
 	defer into.Close()
 	w := gzip.NewWriter(into)
 	n, err := io.Copy(w, from)
 	if err != nil {
-		return nil, fmt.Errorf("error writing to %s: %s\n", intoFilename, err)
+		return nil, fmt.Errorf("error writing to %s: %s", intoFilename, err)
 	}
 	if err := w.Close(); err != nil {
-		return nil, fmt.Errorf("error closing %s: %s\n", intoFilename, err)
+		return nil, fmt.Errorf("error closing %s: %s", intoFilename, err)
 	}
 
 	fi, err := os.Stat(intoFilename)
 	if err != nil {
-		return nil, fmt.Errorf("cannot stat() %s: %s\n", intoFilename, err)
+		return nil, fmt.Errorf("cannot stat() %s: %s", intoFilename, err)
 	}
 
 	var factor float64
@@ -155,24 +156,24 @@ func mkpkg(controlfile []byte, opsidir, datadir, into, tmpdir string) error {
 	log.Printf("creating %s\n", opsiTarFilename)
 	opsiTarFile, err := os.Create(opsiTarFilename)
 	if err != nil {
-		return fmt.Errorf("cannot create %s: %s\n", opsiTarFilename, err)
+		return fmt.Errorf("cannot create %s: %s", opsiTarFilename, err)
 	}
 	tw := tar.NewWriter(opsiTarFile)
 	if err := writeControlfile(tw, controlfile); err != nil {
-		return fmt.Errorf("error writing control file to %s: %s\n", opsiTarFilename, err)
+		return fmt.Errorf("error writing control file to %s: %s", opsiTarFilename, err)
 	}
 	if err := write(tw, opsidir, true); err != nil {
-		return fmt.Errorf("error writing control file to %s: %s\n", opsiTarFilename, err)
+		return fmt.Errorf("error writing control file to %s: %s", opsiTarFilename, err)
 	}
 	if err := tw.Close(); err != nil {
-		return fmt.Errorf("error closing %s: %s\n", opsiTarFilename, err)
+		return fmt.Errorf("error closing %s: %s", opsiTarFilename, err)
 	}
 
 	// create OPSI.tar.gz
 	opsiTarGzFilename := filepath.Join(tmpdir, "OPSI.tar.gz")
 	_, err = compress(opsiTarGzFilename, opsiTarFilename)
 	if err != nil {
-		return fmt.Errorf("cannot compress %s into %s: %s\n", opsiTarFilename, opsiTarGzFilename, err)
+		return fmt.Errorf("cannot compress %s into %s: %s", opsiTarFilename, opsiTarGzFilename, err)
 	}
 
 	// create CLIENT_DATA.tar
@@ -180,14 +181,14 @@ func mkpkg(controlfile []byte, opsidir, datadir, into, tmpdir string) error {
 	log.Printf("creating %s\n", clientTarFilename)
 	clientTarFile, err := os.Create(clientTarFilename)
 	if err != nil {
-		return fmt.Errorf("cannot create %s: %s\n", clientTarFilename, err)
+		return fmt.Errorf("cannot create %s: %s", clientTarFilename, err)
 	}
 	ctw := tar.NewWriter(clientTarFile)
 	if err := write(ctw, datadir, false); err != nil {
-		return fmt.Errorf("cannot write %s: %s\n", clientTarFilename, err)
+		return fmt.Errorf("cannot write %s: %s", clientTarFilename, err)
 	}
 	if err := ctw.Close(); err != nil {
-		return fmt.Errorf("error closing %s: %s\n", clientTarFilename, err)
+		return fmt.Errorf("error closing %s: %s", clientTarFilename, err)
 	}
 
 	// create CLIENT_DATA.tar.gz
@@ -195,18 +196,18 @@ func mkpkg(controlfile []byte, opsidir, datadir, into, tmpdir string) error {
 	log.Printf("creating %s from %s\n", clientTarGzFilename, clientTarFilename)
 	_, err = compress(clientTarGzFilename, clientTarFilename)
 	if err != nil {
-		return fmt.Errorf("cannot compress %s into %s: %s\n", clientTarFilename, clientTarGzFilename, err)
+		return fmt.Errorf("cannot compress %s into %s: %s", clientTarFilename, clientTarGzFilename, err)
 	}
 
 	// create final OPSI package
 	m, err := parse(bytes.NewReader(controlfile))
 	if err != nil {
-		return fmt.Errorf("error parsing controlfile: %s\n", err)
+		return fmt.Errorf("error parsing controlfile: %s", err)
 	}
 	opsiPath := filepath.Join(into, filename(m))
 	opsiFile, err := os.Create(opsiPath)
 	if err != nil {
-		return fmt.Errorf("error creating %s: %s\n", opsiPath, err)
+		return fmt.Errorf("error creating %s: %s", opsiPath, err)
 	}
 	otw := tar.NewWriter(opsiFile)
 	if err := write(otw, opsiTarGzFilename, false); err != nil {
@@ -216,7 +217,7 @@ func mkpkg(controlfile []byte, opsidir, datadir, into, tmpdir string) error {
 		return fmt.Errorf("error writing %s to %s: %s", clientTarGzFilename, opsiPath, err)
 	}
 	if err := otw.Close(); err != nil {
-		return fmt.Errorf("error closing %s: %s\n", opsiPath, err)
+		return fmt.Errorf("error closing %s: %s", opsiPath, err)
 	}
 	log.Printf("created OPSI package %s\n", opsiPath)
 	return nil
@@ -239,7 +240,7 @@ func parseArgs() (Metadata, error) {
 
 func removeDir(path string) {
 	if err := os.RemoveAll(path); err != nil {
-		log.Fatal(fmt.Errorf("cannot remove %s: %s\n", path, err))
+		log.Fatal(fmt.Errorf("cannot remove %s: %s", path, err))
 	}
 }
 
@@ -315,11 +316,11 @@ func writeControlfile(tw *tar.Writer, controlfile []byte) error {
 		Size:    int64(l),
 	}
 	if err := tw.WriteHeader(hdr); err != nil {
-		return fmt.Errorf("cannot append header for control file: %s\n", err)
+		return fmt.Errorf("cannot append header for control file: %s", err)
 	}
 	n, err := tw.Write(controlfile)
 	if err != nil {
-		return fmt.Errorf("cannot write content of control file: %s\n", err)
+		return fmt.Errorf("cannot write content of control file: %s", err)
 	}
 	log.Printf("wrote %d bytes\n", n)
 	return nil

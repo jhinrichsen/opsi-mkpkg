@@ -33,7 +33,7 @@ func TestSimplePackage(t *testing.T) {
 	defer func() {
 		log.Printf("removing %s\n", workbench)
 		if err := os.RemoveAll(workbench); err != nil {
-			log.Fatal(fmt.Errorf("cannot remove %s: %s\n", workbench, err))
+			log.Fatal(fmt.Errorf("cannot remove %s: %s", workbench, err))
 		}
 	}()
 	if err := mkpkg(buf,
