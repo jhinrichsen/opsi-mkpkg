@@ -1,0 +1,24 @@
+[Package]
+version: {{.package_version}}
+depends: 
+
+[Product]
+type: {{.product_type}}
+id: {{.product_id}}
+name: Template
+description: Template based control file
+advice: 
+version: {{.product_version}}
+priority: 0
+licenseRequired: False
+productClasses: 
+setupScript: setup.ins
+uninstallScript: uninstall.ins
+updateScript: 
+alwaysScript: 
+onceScript: 
+customScript: 
+userLoginScript: 
+
+[Changelog]
+feat: initial checkin

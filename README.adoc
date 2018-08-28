@@ -1,0 +1,102 @@
+image::https://travis-ci.org/github/jhinrichsen/opsi-mkpkg?branch=master[Build Status]
+
+= opsi-mkpkg
+
+Create an OPSI package (opsi.org) without OPSI itself.
+
+= Why would you want to do this?
+
+You can always use the OPSI provided `opsi-makepackage` command, previously known as `opsi-makeproductfile`.
+This requires a complete OPSI setup though.
+The suggested way is to use the provided https://opsi.org/try-opsi/[virtual image] which makes VMWare part of the game.
+As of OPSI 4.1, the commandline tools are written in Python, which would make a standalone non-VMWare build pipeline cumbersome to set up.
+So if your packaging is separated from your depot servers, this standalone tool might come in handy.
+One single executable, no dependencies.
+
+= Installation
+
+== Prerequisites
+
+=== Build
+
+- Go (golang.org)
+
+=== Runtime
+
+- Windows, Linux, Mac, or any other platform that Go supports
+
+No OPSI and no local tools required. 
+
+=== Build from source
+
+----
+$ go get github.com/jhinrichsen/opsi-mkpkg
+----
+
+=== Download executable release
+
+For precompiled binaries, use the github 'release' section.
+
+= Run
+
+== Help
+----
+$ opsi-mkpkg -h <1>
+Usage: opsi-mkpkg [key1=value1]*
+  -control string
+        OPSI control file (default "./OPSI/control")
+  -datadir string
+        data directory used as input (default "./CLIENT_DATA")
+  -into string
+        OPSI package destination directory (default ".")
+  -keep
+        keep OPSI interim workbench for debugging purposes
+  -opsidir string
+        OPSI directory used as input (default "./OPSI")
+----
+<1> Display help
+
+== Sample package from `testdata` directory
+
+----
+$ opsi-mkpkg --control testdata/simple/OPSI/control --datadir=testdata/simple/CLIENT_DATA --opsidir=testdata/simple/OPSI <1>
+----
+<1> Create `simple_1.2.3-4.opsi` package in local (`.`) directory
+
+== Controlfile templates
+
+Control files may contain placeholder that are replaced with current values when creating the package.
+Given the following controlfile template snippet:
+----
+[Package]
+version: {{.package_version}} <1>
+depends:
+
+[Product]
+type: localboot
+id: template
+name: Template
+description: Template based control file
+advice:
+version: {{.product_version}} <2>
+----
+<1>, <2> template values
+
+Template values are written in default Go template syntax using mustache-like double curly braces and a leading dot `.`.
+Actual values can be passed via the commandline:
+
+----
+$ opsi-mkpkg package_version=4 product_version=1.2.3 <1>
+$ opsi-mkpkg package_version=${BUILDNO} product_version=${VERSION} <2>
+----
+<1> hardcoded values
+<2> Using the Jenkins build number for package version and a VERSION environment variable
+
+Note that there is no OPSI related naming convention for naming template values, use whatever you like.
+
+= Drawbacks
+
+The original OPSI packaging command has validity checks when creating a control file, or a package.
+E.g. `opsi-makepackage` will check the version number and bail out if it does not fit an internal scheme.
+`opsi-mkpkg` will allow you to create packages containing an illegal version number, e.g. `3_1_2`.
+
