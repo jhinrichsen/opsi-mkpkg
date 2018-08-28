@@ -1,7 +1,7 @@
 image:https://travis-ci.org/jhinrichsen/opsi-mkpkg.svg?branch=master["Build Status", link="https://travis-ci.org/jhinrichsen/opsi-mkpkg"]
 image:https://godoc.org/github.com/jhinrichsen/opsi-mkpkg?status.svg["godoc", link="https://godoc.org/github.com/jhinrichsen/opsi-mkpkg"]
-image:https://goreportcard.com/badge/github.com/jhinrichsen/opsi-mkpkg["Go report card", link="https://goreportcard.com/badge/github.com/jhinrichsen/opsi-mkpkg"]
-image:https://golangci.com/badges/github.com/jhinrichsen/opsi-mkpkg.svg["Golang CI", link="https://golangci.com"]
+image:https://goreportcard.com/badge/github.com/jhinrichsen/opsi-mkpkg["Go report card", link="https://goreportcard.com/report/github.com/jhinrichsen/opsi-mkpkg"]
+image:https://golangci.com/badges/github.com/jhinrichsen/opsi-mkpkg.svg["Golang CI", link="https://golangci.com/r/github.com/jhinrichsen/opsi-mkpkg"]
 
 = opsi-mkpkg
 
