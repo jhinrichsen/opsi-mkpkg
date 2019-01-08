@@ -4,7 +4,9 @@ image:https://godoc.org/github.com/jhinrichsen/opsi-mkpkg?status.svg["godoc", li
 image:https://goreportcard.com/badge/github.com/jhinrichsen/opsi-mkpkg["Go report card", link="https://goreportcard.com/report/github.com/jhinrichsen/opsi-mkpkg"]
 image:https://golangci.com/badges/github.com/jhinrichsen/opsi-mkpkg.svg["Golang CI", link="https://golangci.com/r/github.com/jhinrichsen/opsi-mkpkg"]
 
-= opsi-mkpkg
+= Moved to https://gitlab.com/jhinrichsen/opsi
+
+This project is dead, abandonded, unmaintained. Documentation and code for history/ archive reasons only.
 
 Create an OPSI package (opsi.org) without OPSI itself.
 
